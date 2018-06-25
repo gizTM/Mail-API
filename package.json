@@ -1,0 +1,28 @@
+{
+  "name": "mail-api",
+  "version": "0.0.1",
+  "description": "web api for marking mail as spam or ham and get the score based on spamassassin and amavisd",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gizTM/Mail-API.git"
+  },
+  "keywords": [
+    "mail-api"
+  ],
+  "author": "tharinee-mayriya",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gizTM/Mail-API/issues"
+  },
+  "homepage": "https://github.com/gizTM/Mail-API#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "nodemon": "^1.17.5"
+  }
+}
