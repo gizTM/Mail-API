@@ -9,8 +9,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/spam', (req, res) => {
-  console.log('spam called')
-});
+  console.log('spam called: ',req.body)
+  res.send('spam successfully called')
+})
+
+app.post('/ham', (req,res) => {
+  console.log('ham called: ',req.body)
+  res.send('ham successfully called')
+})
+
+app.put('/test', (req,res) => {
+  console.log('test called: ',req.body)
+  res.send('test successfully called')
+})
 
 app.use((req, res, next) => {
     const err = new Error('Not Found');
