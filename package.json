@@ -7,7 +7,8 @@
     "start": "node ./app.js",
     "start-dev": "nodemon ./app.js",
     "test": "./node_modules/.bin/eslint .",
-    "fix": "./node_modules/.bin/eslint . --fix"
+    "fix": "./node_modules/.bin/eslint . --fix",
+    "set-eslint-config": "./node_modules/.bin/eslint . "
   },
   "repository": {
     "type": "git",
@@ -28,7 +29,7 @@
     "nodemon": "^1.17.5"
   },
   "devDependencies": {
-    "eslint": "^5.0.1",
+    "eslint": "^5.0.0",
     "eslint-plugin-node": "^6.0.1"
   },
   "engines": {

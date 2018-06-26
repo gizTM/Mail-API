@@ -15,6 +15,8 @@
         "indent": ["error","tab"],
         "linebreak-style": ["error","unix"],
         "quotes": ["warn","single"],
+        "no-console": [ "off" ],
+        "no-unused-vars": ["warn"],
         "semi": ["warn","always"],
         "comma-dangle": ["error", "always-multiline"],
         "comma-spacing": ["error", { "before": false, "after": true }]
