@@ -16,6 +16,14 @@ npm install
 nodemon ./app.js
 ```
 
+ If nodemon not found, try installing nodemon globally
+
+ ```sh
+(sudo) npm install -g nodemon
+npm install
+nodemon ./app.js
+ ```
+
 ## Usage
 
 The API consists of 3 function calls
