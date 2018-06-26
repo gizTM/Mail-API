@@ -1,12 +1,13 @@
 {
   "name": "mail-api",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "web api for marking mail as spam or ham and get the score based on spamassassin and amavisd",
   "main": "app.js",
   "scripts": {
     "start": "node ./app.js",
     "start-dev": "nodemon ./app.js",
-    "test": "test"
+    "test": "./node_modules/.bin/eslint .",
+    "fix": "./node_modules/.bin/eslint . --fix"
   },
   "repository": {
     "type": "git",
@@ -16,7 +17,6 @@
     "mail-api"
   ],
   "author": "tharinee-mayriya",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/gizTM/Mail-API/issues"
   },
@@ -26,5 +26,12 @@
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "nodemon": "^1.17.5"
+  },
+  "devDependencies": {
+    "eslint": "^5.0.0",
+    "eslint-plugin-node": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=4.0.0"
   }
 }
