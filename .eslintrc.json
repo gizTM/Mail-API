@@ -1,0 +1,23 @@
+{
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2015,
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": ["error","tab"],
+        "linebreak-style": ["error","unix"],
+        "quotes": ["warn","single"],
+        "semi": ["warn","always"],
+        "no-unused-vars": ["error"],
+        "comma-dangle": ["error", "always-multiline"],
+        "comma-spacing": ["error", { "before": false, "after": true }]
+    }
+}
