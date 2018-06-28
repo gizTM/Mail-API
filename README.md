@@ -4,36 +4,36 @@ Rest API for mail content scanning based on NodeJS, Amavisd and Spamassassin
 
 ## Installation
 
-``` sh
-npm install
-./app.js
+install with docker-compose
+
+```sh
+cd docker
+docker-compose rm --all &&
+docker-compose build --no-cache &&
+docker-compose up -d --force-recreate
 ```
 
-or start server with nodemon (just save, no need to terminate and restart server)
+_may take time to install..._
 
-``` sh
-npm install
-nodemon ./app.js
-```
-
- If nodemon not found, try installing nodemon globally
-
- ```sh
-(sudo) npm install -g nodemon
-npm install
-nodemon ./app.js
- ```
+if want to install and run with debug, **remove option -d** from **docker-compose up** command
 
 ## Usage
 
 The API consists of 3 function calls
+Each with body:
 
-- mark mail as **spam**
+```sh
+    {
+      content: [mail content as text]
+    }
+```
+
+- **localhost:1234/spam**
+  - mark content as _SPAM_
   - method: POST
-  - body: mail content
-- mark mail as **ham**
+- **localhost:1234/ham**
+  - mark content as _HAM_
   - method: POST
-  - body: mail content
-- test mail **spam / ham** score
+- **localhost:1234/test**
+  - send content to _TEST_ spam score
   - method: PUT
-  - body: mail content
