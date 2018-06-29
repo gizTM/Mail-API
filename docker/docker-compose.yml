@@ -10,7 +10,7 @@ services:
     ports: 
       - "1234:1234"
     volumes:
-      - mail-content:/usr/src/app/tmp/
+      - mail-content:/mail_content
 
   spamassassin-service:
     container_name: spamassassin-app
@@ -19,7 +19,7 @@ services:
       dockerfile: ./docker/spamassassin/Dockerfile
     image: my-spamassassin:latest
     volumes:
-      - mail-content:/usr/src/app/tmp
+      - mail-content:/mail_content
 
 volumes:
   mail-content:

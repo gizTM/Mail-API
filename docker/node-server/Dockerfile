@@ -1,6 +1,6 @@
 FROM node:8-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /api-dir
 COPY api/package*.json ./
 RUN npm install
 

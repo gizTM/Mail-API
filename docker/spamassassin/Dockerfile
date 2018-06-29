@@ -1,3 +1,4 @@
 FROM ubuntu:latest
-RUN apt-get update && apt-get install -y spamassassin && mkdir -p /usr/src/app/mail_content && ls
+COPY ./spamassassin/script.sh ./
+RUN apt-get update && apt-get install -y spamassassin inotify-tools && mkdir -p /mail_content && chmod a+rx script.sh
 CMD ./script.sh

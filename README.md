@@ -8,9 +8,9 @@ install with docker-compose
 
 ```sh
 cd docker
-docker-compose rm --all &&
+docker-compose down --rm all --volumes --remove-orphans &&
 docker-compose build --no-cache &&
-docker-compose up -d --force-recreate
+docker-compose up -d --force-recreate --remove-orphans
 ```
 
 _may take time to install..._
@@ -23,9 +23,9 @@ The API consists of 3 function calls
 Each with body:
 
 ```sh
-    {
-      content: [mail content as text]
-    }
+{
+  content: [mail content as text]
+}
 ```
 
 - **localhost:1234/spam**
