@@ -46,7 +46,7 @@ const clearMailDir = () => {
 //-------------------------------------------HELPER FUNCTIONS-------------------------------------------
 
 //-----------------------------------------------API CODE-----------------------------------------------
-app.post('/spam', upload.single('spam.json'), (req, res) => {
+app.post('/spam', upload.single('spam'), (req, res) => {
 	clearMailDir();
 	// const json = JSON.stringify(req.body.content);
 	// writeFile(mail_dir+'/spam.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---spam written---') });
@@ -74,7 +74,7 @@ app.post('/spam', upload.single('spam.json'), (req, res) => {
 	});
 });
 
-app.post('/ham', upload.single('ham.json'), (req, res) => {
+app.post('/ham', upload.single('ham'), (req, res) => {
 	clearMailDir();
 	// const json = JSON.stringify(req.body.content);
 	// writeFile(mail_dir+'/ham.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---ham written---'); });
@@ -102,7 +102,7 @@ app.post('/ham', upload.single('ham.json'), (req, res) => {
 	});
 });
 
-app.put('/test', upload.single('test.json'), (req, res) => {
+app.put('/test', upload.single('test'), (req, res) => {
 	clearMailDir();
 	// const json = JSON.stringify(req.body.content);
 	// writeFile(mail_dir+'/test.json', req.body, () => { console.log('\x1b[34m%s\x1b[0m', '---test written---') });

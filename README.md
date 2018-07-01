@@ -23,11 +23,24 @@ if want to install and run with debug, **remove option -d** from **docker-compos
 The API consists of 3 function calls
 Each with body:
 
-```sh
-{
-  content: [mail content as text]
-}
-```
+## Change
+
+### Header
+
+| Key | Value |
+| --- | --- |
+| Content-Type | multipart/form-data |
+
+### Body
+
+- form-data
+
+| Request | Key | Value |
+| --- | --- | --- |
+| `/spam` | spam | _spam_mail_file_ |
+| `/ham` | ham | _ham_mail_file_ |
+| `/test` | test | _mail_file_ |
+
 
 - **localhost:1234/spam**
   - mark content as _SPAM_
