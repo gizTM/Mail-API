@@ -11,7 +11,8 @@ app.use(cors()); // Allow CORS
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const timeout = 1000;
+const mail_dir = '/mail_content';
+
 //-------------------------------------------HELPER FUNCTIONS-------------------------------------------
 const writeFile = (path, contents, callback) => {
 	mkdirp(getDirName(path), (err) => {
@@ -26,67 +27,112 @@ const readFile = (path, callback) => {
 		fs.readFile(path, 'utf-8', callback);
 	});
 };
-
-const startWaiting = (path, callback, timeout) => {
-	mkdirp(getDirName(path), (err) => {
-		if (err) throw err;
-		const timer = setTimeout( () => {
-			stopWaiting(path);
-			console.log('Timed out.');
-		}, timeout);
-		fs.watchFile(path, { persistent: true, interval: 1000 }, (curr, prev) => {
-			onChanged(curr, prev, path, timer, callback);
-		});
-	});
-};
-
-const onChanged = (current, previous, path, timer, clientCallback) => {
-	let type = 'File modified.';
-	if (current.mode === 0 && previous.mode === 0) type = 'No file.';
-	else if (current.mode > 0 && previous.mode === 0) type = 'File created.';
-	else if (current.mode === 0 && previous.mode > 0) type = 'File deleted.';
-	if (type !== 'No file.') {
-		stopWaiting(path);
-		clearTimeout(timer);
-	}
-	clientCallback(type, current, previous);
-};
-
-const stopWaiting = (path) => {
-	fs.unwatchFile(path, this);
-};
 //-------------------------------------------HELPER FUNCTIONS-------------------------------------------
+
 //-----------------------------------------------API CODE-----------------------------------------------
 app.post('/spam', (req, res) => {
 	const json = JSON.stringify(req.body);
-	writeFile('/mail_content/spam.json', json, () => {
-		console.log('\x1b[36m%s\x1b[0m', '<---write spam mail json to file completed--->');
+	writeFile(mail_dir+'/spam.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---spam written---') });
+	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+		if (filename === 'response.json' && eventType == 'change') {
+			watcher.close();
+			readFile(mail_dir+'/response.json', (err, data) => {
+				if (err) throw err;
+				if (data) {
+					if (data.substring(20, 21) === '1') {
+						console.log('\x1b[32m%s\x1b[0m', '<---spam success response sent--->\n');
+						res.status(200).json({ status: 'success' }).end();
+					} else {
+						console.log('\x1b[36m%s\x1b[0m', '<---spam duplicate error response sent--->\n');
+						res.json({
+							status: 'SP_ERR', 
+							message: 'send duplicate mail content to learn'
+						}).end();
+					}
+				}
+			});
+		}
 	});
-	startWaiting('/mail_content/response.json', readFile('/mail_content/response.json', (err,data) => {
-		console.log('response.json: ',data);
-		console.log('substr: ', data.substring(20,21));
-		if (data.substring(20,21) === '0') 
-			res.json({
-				status: 'SP_ERR',
-				message: 'Send duplicated mail content to learn'
-			 }).end();
-		else res.status(200).json({ status: 'success' });
-	}), timeout);
 });
 
 app.post('/ham', (req, res) => {
 	const json = JSON.stringify(req.body);
-	writeFile('/mail_content/ham.json', json, () => {
-		console.log('\x1b[36m%s\x1b[0m', '<---write ham mail json to file completed--->');
+	writeFile(mail_dir+'/ham.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---ham written---') });
+	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+		if (filename === 'response.json' && eventType == 'change') {
+			watcher.close();
+			readFile(mail_dir+'/response.json', (err, data) => {
+				if (err) throw err;
+				if (data) {
+					if (data.substring(20, 21) === '1') {
+						console.log('\x1b[32m%s\x1b[0m', '<---ham success response sent--->\n');
+						res.status(200).json({ status: 'success' }).end();
+					} else {
+						console.log('\x1b[36m%s\x1b[0m', '<---ham duplicate error response sent--->\n');
+						res.json({
+							status: 'SP_ERR', 
+							message: 'send duplicate mail content to learn'
+						}).end();
+					}
+				}
+			});
+		}
 	});
-	res.send('ham successfully called');
 });
 
 app.put('/test', (req, res) => {
-	writeFile('/mail_content/test.json', json, () => {
-		console.log('\x1b[36m%s\x1b[0m', '<---write test mail json to file completed--->');
+	const json = JSON.stringify(req.body);
+	writeFile(mail_dir+'/test.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---test written---') });
+	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+		if (filename === 'response.json' && eventType === 'change') {
+			watcher.close();
+			readFile(mail_dir+'/response.json', (err, data) => {
+				if (err) throw err;
+				if (data) {
+					const status = data.split(' ')[0];
+					const score = parseFloat(data.split(' ')[1]);
+					const threshold = parseFloat(data.split(' ')[2]);
+					if (status === 'Yes') {
+						console.log('\x1b[32m%s\x1b[0m', '<--- mail is spam ('+score+'/'+threshold+')!!! --->\n');
+						res.status(200).json({ 
+							status: 'success',
+							score: score,
+							threshold: threshold,
+							result: 'spam'
+						}).end();
+					} else {
+						console.log('\x1b[32m%s\x1b[0m', '<--- mail is ham ('+score+'/'+threshold+')!!! --->\n');
+						res.status(200).json({ 
+							status: 'success',
+							score: score,
+							threshold: threshold,
+							result: 'ham'
+						}).end();
+					}
+				}
+			});
+		}
 	});
-	res.send('test successfully called');
+});
+
+app.post('/clear', (req, res) => {
+	const json = 'clear bayes db';
+	writeFile(mail_dir+'/clear.json', json, () => {});
+	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+		if (filename === 'response.json' && eventType === 'change') {
+			watcher.close();
+			readFile(mail_dir+'/response.json', (err, data) => {
+				if (err) throw err;
+				if (data) {
+					console.log('\x1b[32m%s\x1b[0m', '<--- clear bayes db --->\n');
+					res.status(200).json({ 
+						status: 'success',
+						message: data
+					 }).end();
+				}
+			});
+		}
+	});
 });
 //-----------------------------------------------API CODE-----------------------------------------------
 app.use((req, res, next) => {
@@ -117,4 +163,5 @@ app.use('/', (req, res) => {
 
 app.listen(config.httpPort, () => {
 	console.log('Listening on port ' + config.httpPort);
+	console.log();
 });

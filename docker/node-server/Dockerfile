@@ -5,5 +5,6 @@ COPY api/package*.json ./
 RUN npm install
 
 COPY api .
+# RUN ls /api-dir
 
 CMD npm start
