@@ -4,6 +4,9 @@ MONITORDIR="/mail_content"
 inotifywait -m -e close_write --format '%f' "$MONITORDIR" | while
 	read NEWFILE
 do
+	# cat "$MONITORDIR"/"$NEWFILE";
+	# echo "$(spamassassin -t /gtube_newline.txt)";
+	# echo '';
 	if [ "$NEWFILE" = "spam.json" ]; then
 		echo "/spam called"
 		echo "$(sa-learn --spam "$MONITORDIR"/"$NEWFILE")" >"$MONITORDIR"/response.json
@@ -13,6 +16,7 @@ do
 	elif [ "$NEWFILE" = "test.json" ]; then
 		echo "/test called"
 		TEST=$(spamassassin -t "$MONITORDIR"/"$NEWFILE");
+		# echo "$TEST";
 		STATUS=${TEST#*X-Spam-Status: };
 		SCORE=${TEST#*score=};
 		REQUIRE=${TEST#*required=};

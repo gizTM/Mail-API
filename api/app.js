@@ -5,40 +5,59 @@ const config = require('./config');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const getDirName = require('path').dirname;
+const mail_dir = '/mail_content';
+const multer  = require('multer');
+const upload = multer({ dest: mail_dir+'/' });
 
 const app = express();
 app.use(cors()); // Allow CORS
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const mail_dir = '/mail_content';
-
 //-------------------------------------------HELPER FUNCTIONS-------------------------------------------
 const writeFile = (path, contents, callback) => {
 	mkdirp(getDirName(path), (err) => {
-		if (err) throw err;
+		if (err) return console.log('\x1b[31m%s\x1b[0m', err);
 		fs.writeFile(path, contents, 'utf-8', callback);
 	});
 };
 
 const readFile = (path, callback) => {
 	mkdirp(getDirName(path), (err) => {
-		if (err) throw err;
+		if (err) return console.log('\x1b[31m%s\x1b[0m', err);
 		fs.readFile(path, 'utf-8', callback);
 	});
+};
+
+const clearMailDir = () => {
+	// const files = ['/spam.json', '/ham.json', '/test.json', '/clear.json'];
+	// console.log('\x1b[40m%s\x1b[0m', 'files cleared');
+	// for (let i=0; i<files.length; i++) {
+	// fs.stat(mail_dir+files[i], (err, stats) => {
+	// 	console.log(stats);//here we got all information of file in stats variable
+	// 	if (err) return console.error(err);
+	// 	fs.unlink(mail_dir+files[i], err => {
+	// 		 if(err) return console.log(err);
+	// 		 console.log('file deleted successfully');
+	// 	});  
+	//  });
+	// }
 };
 //-------------------------------------------HELPER FUNCTIONS-------------------------------------------
 
 //-----------------------------------------------API CODE-----------------------------------------------
-app.post('/spam', (req, res) => {
-	const json = JSON.stringify(req.body);
-	writeFile(mail_dir+'/spam.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---spam written---') });
+app.post('/spam', upload.single('spam.json'), (req, res) => {
+	clearMailDir();
+	// const json = JSON.stringify(req.body.content);
+	// writeFile(mail_dir+'/spam.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---spam written---') });
+	fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/spam.json'));
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType == 'change') {
 			watcher.close();
 			readFile(mail_dir+'/response.json', (err, data) => {
-				if (err) throw err;
+				if (err) return console.log('\x1b[31m%s\x1b[0m', err);
 				if (data) {
+					console.log('\x1b[35m%s\x1b[0m', data);
 					if (data.substring(20, 21) === '1') {
 						console.log('\x1b[32m%s\x1b[0m', '<---spam success response sent--->\n');
 						res.status(200).json({ status: 'success' }).end();
@@ -55,15 +74,18 @@ app.post('/spam', (req, res) => {
 	});
 });
 
-app.post('/ham', (req, res) => {
-	const json = JSON.stringify(req.body);
-	writeFile(mail_dir+'/ham.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---ham written---') });
+app.post('/ham', upload.single('ham.json'), (req, res) => {
+	clearMailDir();
+	// const json = JSON.stringify(req.body.content);
+	// writeFile(mail_dir+'/ham.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---ham written---'); });
+	fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/ham.json'));
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType == 'change') {
 			watcher.close();
 			readFile(mail_dir+'/response.json', (err, data) => {
-				if (err) throw err;
+				if (err) return console.log('\x1b[31m%s\x1b[0m', err);
 				if (data) {
+					console.log('\x1b[35m%s\x1b[0m', data);
 					if (data.substring(20, 21) === '1') {
 						console.log('\x1b[32m%s\x1b[0m', '<---ham success response sent--->\n');
 						res.status(200).json({ status: 'success' }).end();
@@ -80,15 +102,19 @@ app.post('/ham', (req, res) => {
 	});
 });
 
-app.put('/test', (req, res) => {
-	const json = JSON.stringify(req.body);
-	writeFile(mail_dir+'/test.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---test written---') });
+app.put('/test', upload.single('test.json'), (req, res) => {
+	clearMailDir();
+	// const json = JSON.stringify(req.body.content);
+	// writeFile(mail_dir+'/test.json', req.body, () => { console.log('\x1b[34m%s\x1b[0m', '---test written---') });
+	// const target_path = mail_dir+'/'+req.file.originalname;
+	fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/test.json'));
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType === 'change') {
 			watcher.close();
 			readFile(mail_dir+'/response.json', (err, data) => {
-				if (err) throw err;
+				if (err) return console.log('\x1b[31m%s\x1b[0m', err);
 				if (data) {
+					// console.log('\x1b[35m%s\x1b[0m', data);
 					const status = data.split(' ')[0];
 					const score = parseFloat(data.split(' ')[1]);
 					const threshold = parseFloat(data.split(' ')[2]);
@@ -116,19 +142,20 @@ app.put('/test', (req, res) => {
 });
 
 app.post('/clear', (req, res) => {
+	clearMailDir();
 	const json = 'clear bayes db';
 	writeFile(mail_dir+'/clear.json', json, () => {});
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType === 'change') {
 			watcher.close();
 			readFile(mail_dir+'/response.json', (err, data) => {
-				if (err) throw err;
+				if (err) return console.log('\x1b[31m%s\x1b[0m', err);
 				if (data) {
 					console.log('\x1b[32m%s\x1b[0m', '<--- clear bayes db --->\n');
 					res.status(200).json({ 
 						status: 'success',
 						message: data
-					 }).end();
+					}).end();
 				}
 			});
 		}

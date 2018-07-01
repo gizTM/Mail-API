@@ -10,7 +10,8 @@ install with docker-compose
 cd docker
 docker-compose down --rm all --volumes --remove-orphans &&
 docker-compose build --no-cache &&
-docker-compose up -d --force-recreate --remove-orphans
+docker-compose up -d --force-recreate --remove-orphans &&
+./clear_docker.sh
 ```
 
 _may take time to install..._
