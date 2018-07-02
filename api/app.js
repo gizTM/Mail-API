@@ -8,6 +8,7 @@ const getDirName = require('path').dirname;
 const mail_dir = '/mail_content';
 const multer  = require('multer');
 const upload = multer({ dest: mail_dir+'/' });
+require('console-stamp')(console, { pattern: 'HH:MM:ss.l', label: false });
 
 const app = express();
 app.use(cors()); // Allow CORS
@@ -47,6 +48,7 @@ const clearMailDir = () => {
 
 //-----------------------------------------------API CODE-----------------------------------------------
 app.post('/spam', upload.single('spam'), (req, res) => {
+	console.log('\x1b[46m%s\x1b[0m', '/spam requested');
 	clearMailDir();
 	// const json = JSON.stringify(req.body.content);
 	// writeFile(mail_dir+'/spam.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---spam written---') });
@@ -75,6 +77,7 @@ app.post('/spam', upload.single('spam'), (req, res) => {
 });
 
 app.post('/ham', upload.single('ham'), (req, res) => {
+	console.log('\x1b[46m%s\x1b[0m', '/ham requested');
 	clearMailDir();
 	// const json = JSON.stringify(req.body.content);
 	// writeFile(mail_dir+'/ham.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---ham written---'); });
@@ -103,6 +106,7 @@ app.post('/ham', upload.single('ham'), (req, res) => {
 });
 
 app.put('/test', upload.single('test'), (req, res) => {
+	console.log('\x1b[46m%s\x1b[0m', '/test requested');
 	clearMailDir();
 	// const json = JSON.stringify(req.body.content);
 	// writeFile(mail_dir+'/test.json', req.body, () => { console.log('\x1b[34m%s\x1b[0m', '---test written---') });
@@ -142,6 +146,7 @@ app.put('/test', upload.single('test'), (req, res) => {
 });
 
 app.post('/clear', (req, res) => {
+	console.log('\x1b[46m%s\x1b[0m', '/clear requested');
 	clearMailDir();
 	const json = 'clear bayes db';
 	writeFile(mail_dir+'/clear.json', json, () => {});

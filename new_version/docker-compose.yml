@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  new-mail-api-service:
+    container_name: new-mail-api-app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: new-mail-api:latest
+    ports:
+      - "1235:1235"
