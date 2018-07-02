@@ -6,17 +6,23 @@ Rest API for mail content scanning based on NodeJS, Amavisd and Spamassassin
 
 ### with docker-compose
 
-for v1 (2 services w/ shared volume)
+- v1 (2 services w/ shared volume)
 
-```sh
-cd docker
-```
+    ```sh
+      cd docker
+    ```
 
-for v2 (1 service using `node-cmd` module)
+- v2 (1 service using `node-cmd` module)
 
-```sh
-cd new_version
-```
+    ```sh
+    cd new_version
+    ```
+
+- v3 (same as v2 but w/ text/plain request body)
+
+    ```sh
+    cd new_version_text
+    ```
 
 then
 
@@ -29,15 +35,6 @@ docker-compose up -d --force-recreate --remove-orphans
 to install **with debug** console remove `-d` option from `docker-compose up` command
 
 ### (optional) clear unused docker images and containers
-
-bash script
-
-```sh
-docker ps -qf status=exited | xargs --no-run-if-empty docker rm &&
-docker images -qf dangling=true | xargs --no-run-if-empty docker rmi
-```
-
-for non bash
 
 ```sh
 docker rm $(docker ps -aqf status=exited) &&

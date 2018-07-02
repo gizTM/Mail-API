@@ -16,7 +16,7 @@
         "linebreak-style": ["error","unix"],
         "quotes": ["warn","single"],
         "no-console": [ "off" ],
-        "no-unused-vars": ["warn"],
+        "no-unused-vars": ["off"],
         "semi": ["warn","always"],
         "comma-spacing": ["error", { "before": false, "after": true }]
     }
