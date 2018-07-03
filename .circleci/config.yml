@@ -35,6 +35,11 @@ jobs:
           key: v1-dependencies-{{ checksum "api/package.json" }}-{{ checksum "new_version/package.json" }}-{{ checksum "new_version_text/package.json" }}
         
       # run tests!
+      - run: cd api
+      - run: yarn test
+      - run: cd ../new_version
+      - run: yarn test
+      - run: cd ../new_version_text
       - run: yarn test
 
 
