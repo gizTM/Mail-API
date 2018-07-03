@@ -2,10 +2,14 @@
 
 Rest API for mail content scanning based on NodeJS, Amavisd and Spamassassin
 
+Most stable --> v3
+
 ## Test run server in docker container
 
+v1->1234 v2->1235 v3->1236
+
 ```sh
-docker run -it --name <container_name> ubuntu:14.04
+docker run -it -p 1236:1236 --name <container_name> ubuntu:14.04
 ```
 
 once in docker container
@@ -35,22 +39,22 @@ the code changed by `docker cp <source> <dest>` will be recognized and server wi
 
 ## Run server with docker-compose
 
-- v1 (2 services w/ shared volume and `inotify-tools`)
+- v1 **(Not stable)** (2 services w/ shared volume and `inotify-tools`)
 
     ```sh
-    cd docker
+    cd v1/docker
     ```
 
 - v2 (1 service using `node-cmd` module)
 
     ```sh
-    cd new_version
+    cd v2
     ```
 
 - v3 (same as v2 but w/ text/plain request body)
 
     ```sh
-    cd new_version_text
+    cd v3
     ```
 
 then
@@ -80,8 +84,6 @@ The API consists of 3 function calls
 
 _**port: v1-1234 v2-1235 v3-1236**_
 
-Each with body:
-
 ### Header
 
 | Key | Value |
@@ -98,6 +100,8 @@ Each with body:
 | `/ham` | ham | _ham_mail_file_ |
 | `/test` | test | _mail_file_ |
 
+***body as plain text for v3***
+
 ### API pattern
 
 - `localhost:1234/spam`
@@ -110,17 +114,19 @@ Each with body:
   - send content to _TEST_ spam score
   - method: PUT
 
-### for v2 only
+### Extra
+
+train spamassassin with spam/ham folder at `./mailtest`
 
 - `localhost:1235/spams` calls `sa-learn --spam 'folder_name'`
 - `localhost:1235/hams` calls `sa-learn --ham 'folder_name'`
 
-where body: `application/json`
+where body: ***`text/plain`***
 
 ```sh
 {
-  path: <path>
+  "path": <path>
 }
 ```
 
-path can be: `easy_ham_1`, `easy_ham_2`, `easy_ham_3`, `hard_ham_1`, `hard_ham_2`, `spam_1`, `spam_2`, `spam_3`
+As of now, **\<path\>** can be: `easy_ham_1`, `easy_ham_2`, `easy_ham_3`, `hard_ham_1`, `hard_ham_2`, `spam_1`, `spam_2`, `spam_3`
