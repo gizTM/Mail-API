@@ -80,6 +80,7 @@ app.post('/spam', upload.single('spam'), (req, res) => {
 		(err, data, stderr) => {
 			if (err) console.log('\x1b[31m%s\x1b[0m', err);
 			else {
+				console.log('\x1b[32m%s\x1b[0m', data);
 				if (data.substring(20, 21) === '1') {
 					console.log('\x1b[32m%s\x1b[0m', '<---spam success --->\n');
 					res.status(200).json({ status: 'success' }).end();
@@ -102,6 +103,7 @@ app.post('/ham', upload.single('ham'), (req, res) => {
 		(err, data, stderr) => {
 			if (err) console.log('\x1b[31m%s\x1b[0m', err);
 			else {
+				console.log('\x1b[32m%s\x1b[0m', data);
 				if (data.substring(20, 21) === '1') {
 					console.log('\x1b[32m%s\x1b[0m', '<---ham success --->\n');
 					res.status(200).json({ status: 'success' }).end();

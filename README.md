@@ -2,11 +2,40 @@
 
 Rest API for mail content scanning based on NodeJS, Amavisd and Spamassassin
 
-## Installation
+## Test run server in docker container
 
-### with docker-compose
+```sh
+docker run -it --name <container_name> ubuntu:14.04
+```
 
-- v1 (2 services w/ shared volume)
+once in docker container
+
+```sh
+rm -vf /var/lib/apt/lists/* && apt-get update && mkdir /data \
+apt-get install -y nodejs npm spamassassin curl apt-transport-https ca-certificates \
+curl --fail -ssL -o setup-nodejs https://deb.nodesource.com/setup_8.x && bash setup-nodejs && apt-get install -y nodejs build-essential
+```
+
+_this will take some time..._
+
+in another terminal
+
+```sh
+docker cp /path/to/new_version/folder <container_name>:/data
+```
+
+back inside docker container
+
+```sh
+cd /data && npm install \
+npm run start-dev
+```
+
+the code changed by `docker cp <source> <dest>` will be recognized and server will restart automatically
+
+## Run server with docker-compose
+
+- v1 (2 services w/ shared volume and `inotify-tools`)
 
     ```sh
     cd docker
@@ -84,7 +113,6 @@ Each with body:
 ### for v2 only
 
 - `localhost:1235/spams` calls `sa-learn --spam 'folder_name'`
-
 - `localhost:1235/hams` calls `sa-learn --ham 'folder_name'`
 
 where body: `application/json`
