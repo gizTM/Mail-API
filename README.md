@@ -48,6 +48,9 @@ if want to install and run with debug, **remove option -d** from **docker-compos
 ## Usage
 
 The API consists of 3 function calls
+
+_**port: v1-1234 v2-1235 v3-1236**_
+
 Each with body:
 
 ### Header
@@ -66,12 +69,30 @@ Each with body:
 | `/ham` | ham | _ham_mail_file_ |
 | `/test` | test | _mail_file_ |
 
-- **localhost:1234/spam**
+### API pattern
+
+- `localhost:1234/spam`
   - mark content as _SPAM_
   - method: POST
-- **localhost:1234/ham**
+- `localhost:1234/ham`
   - mark content as _HAM_
   - method: POST
-- **localhost:1234/test**
+- `localhost:1234/test`
   - send content to _TEST_ spam score
   - method: PUT
+
+### for v2 only
+
+- `localhost:1235/spams` calls `sa-learn --spam 'folder_name'`
+
+- `localhost:1235/hams` calls `sa-learn --ham 'folder_name'`
+
+where body: `application/json`
+
+```sh
+{
+  path: <path>
+}
+```
+
+path can be: `easy_ham_1`, `easy_ham_2`, `easy_ham_3`, `hard_ham_1`, `hard_ham_2`, `spam_1`, `spam_2`, `spam_3`
