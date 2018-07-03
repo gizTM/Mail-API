@@ -33,6 +33,46 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //-------------------------------------------HELPER FUNCTIONS-------------------------------------------
 
 //-----------------------------------------------API CODE-----------------------------------------------
+app.post('/spams', (req, res) => {
+	console.log('\x1b[46m%s\x1b[0m', '/spams requested');
+	cmd.get(`sa-learn --spam /data/mailtest/`+req.body.path, (err, data, stderr) => {
+		if (err) console.log('\x1b[31m%s\x1b[0m', err);
+		else {
+			console.log('%s\x1b[0m', data);
+			if (data.substring(20,21) !== '0') {
+				console.log('\x1b[32m%s', '<--- spams (folder) success --->');
+				res.json({ status: 'success' }).end();
+			} else {
+				console.log('\x1b[32m%s\x1b[0m', '<--- spams (folder) all duplicate --->');
+				res.json({ 
+					status: 'SP_ERR', 
+					message: 'send duplicate mail content to learn'
+				}).end();
+			}
+		}
+	})
+});
+
+app.post('/hams', (req, res) => {
+	console.log('\x1b[46m%s\x1b[0m', '/hams requested');
+	cmd.get(`sa-learn --ham /data/mailtest/`+req.body.path, (err, data, stderr) => {
+		if (err) console.log('\x1b[31m%s\x1b[0m', err);
+		else {
+			console.log('%s\x1b[0m', data);
+			if (data.substring(20,21) !== '0') {
+				console.log('\x1b[32m%s', '<--- hams (folder) success --->');
+				res.json({ status: 'success' }).end();
+			} else {
+				console.log('\x1b[32m%s\x1b[0m', '<--- hams (folder) all duplicate --->');
+				res.json({ 
+					status: 'SP_ERR', 
+					message: 'send duplicate mail content to learn'
+				}).end();
+			}
+		}
+	})
+});
+
 app.post('/spam', upload.single('spam'), (req, res) => {
 	console.log('\x1b[46m%s\x1b[0m', '/spam requested');
 	fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/spam.json'));

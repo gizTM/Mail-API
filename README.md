@@ -9,7 +9,7 @@ Rest API for mail content scanning based on NodeJS, Amavisd and Spamassassin
 - v1 (2 services w/ shared volume)
 
     ```sh
-      cd docker
+    cd docker
     ```
 
 - v2 (1 service using `node-cmd` module)
