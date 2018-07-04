@@ -11,3 +11,4 @@ RUN cd /data && npm install
 WORKDIR /data
 
 CMD ["npm", "start"]
+# CMD npm run start-dev

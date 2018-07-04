@@ -116,17 +116,19 @@ _**port: v1-1234 v2-1235 v3-1236**_
 
 ### Extra
 
-train spamassassin with spam/ham folder at `./mailtest`
+***all post method***
 
-- `localhost:1235/spams` calls `sa-learn --spam 'folder_name'`
-- `localhost:1235/hams` calls `sa-learn --ham 'folder_name'`
+- train spamassassin with spam/ham folder at `./mailtest`
+  - `localhost:1236/spams` calls `sa-learn --spam 'folder_name'`
+  - `localhost:1236/hams` calls `sa-learn --ham 'folder_name'`
 
-where body: ***`text/plain`***
-
-```sh
-{
-  "path": <path>
-}
-```
-
-As of now, **\<path\>** can be: `easy_ham_1`, `easy_ham_2`, `easy_ham_3`, `hard_ham_1`, `hard_ham_2`, `spam_1`, `spam_2`, `spam_3`
+    where body: ***`text/plain`***
+    ```sh
+    {
+      "path": <path>
+    }
+    ```
+    As of now, **\<path\>** can be: `easy_ham_1`, `easy_ham_2`, `easy_ham_3`, `hard_ham_1`, `hard_ham_2`, `spam_1`, `spam_2`, `spam_3`
+- clear and peek spamassassin trained bayes database
+  - `localhost:1236/clear` calls `sa-learn --clear`
+  - `localhost:1236/peek` calls `sa-learn --backup`
