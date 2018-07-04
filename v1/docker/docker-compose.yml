@@ -1,22 +1,22 @@
 version: '3'
 
 services:
-  mail-api-service:
-    container_name: mail-api-app
+  mail-api-service-v1:
+    container_name: mail-api-app-v1
     build:
-      context: ../
-      dockerfile: ./docker/node-server/Dockerfile
-    image: mail-api:latest
+      context: ../../
+      dockerfile: ./v1/docker/node-server/Dockerfile
+    image: mail-api-v1:latest
     ports: 
       - "1234:1234"
     volumes:
       - mail-content:/mail_content
 
-  spamassassin-service:
+  spamassassin-service-v1:
     container_name: spamassassin-app
     build:
-      context: ../
-      dockerfile: ./docker/spamassassin/Dockerfile
+      context: ../../
+      dockerfile: ./v1/docker/spamassassin/Dockerfile
     image: my-spamassassin:latest
     volumes:
       - mail-content:/mail_content

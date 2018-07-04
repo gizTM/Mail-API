@@ -5,6 +5,7 @@ RUN apt-get install -y nodejs npm spamassassin curl apt-transport-https ca-certi
 RUN curl --fail -ssL -o setup-nodejs https://deb.nodesource.com/setup_8.x && bash setup-nodejs && apt-get install -y nodejs build-essential
 
 COPY v2 /data
+RUN ls /data
 COPY mailtest /data/mailtest
 RUN cd /data && npm install
 

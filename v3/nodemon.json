@@ -10,7 +10,7 @@
     "js": "node --harmony"
   },
   "events": {
-    "crash": "fuser -k 1234/tcp"
+    "crash": "fuser -k 1236/tcp"
   },
   "env": {
     "NODE_ENV": "development"

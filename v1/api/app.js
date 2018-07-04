@@ -8,7 +8,7 @@ const getDirName = require('path').dirname;
 const mail_dir = '/mail_content';
 const multer  = require('multer');
 const upload = multer({ dest: mail_dir+'/' });
-require('console-stamp')(console, { pattern: 'HH:MM:ss.l', label: false });
+// require('console-stamp')(console, { pattern: 'HH:MM:ss.l', label: false });
 
 const app = express();
 app.use(cors()); // Allow CORS
@@ -30,28 +30,24 @@ const readFile = (path, callback) => {
 		fs.readFile(path, 'utf-8', callback);
 	});
 };
-
 //-------------------------------------------HELPER FUNCTIONS-------------------------------------------
 
 //-----------------------------------------------API CODE-----------------------------------------------
 app.post('/spam', upload.single('spam'), (req, res) => {
-	console.log('\x1b[46m%s\x1b[0m', '/spam requested');
-	// clearMailDir();
-	// const json = JSON.stringify(req.body.content);
-	// writeFile(mail_dir+'/spam.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---spam written---') });
+	console.log('/spam requested');
 	fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/spam.json'));
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType == 'change') {
 			watcher.close();
 			readFile(mail_dir+'/response.json', (err, data) => {
-				if (err) return console.log('\x1b[31m%s\x1b[0m', err);
+				if (err) return console.log(err);
 				if (data) {
-					console.log('\x1b[35m%s\x1b[0m', data);
+					console.log(data);
 					if (data.substring(20, 21) === '1') {
-						console.log('\x1b[32m%s\x1b[0m', '<---spam success response sent--->\n');
+						console.log('<---spam success response sent--->\n');
 						res.status(200).json({ status: 'success' }).end();
 					} else {
-						console.log('\x1b[36m%s\x1b[0m', '<---spam duplicate error response sent--->\n');
+						console.log('<---spam duplicate error response sent--->\n');
 						res.json({
 							status: 'SP_ERR', 
 							message: 'send duplicate mail content to learn'
@@ -64,23 +60,20 @@ app.post('/spam', upload.single('spam'), (req, res) => {
 });
 
 app.post('/ham', upload.single('ham'), (req, res) => {
-	console.log('\x1b[46m%s\x1b[0m', '/ham requested');
-	// clearMailDir();
-	// const json = JSON.stringify(req.body.content);
-	// writeFile(mail_dir+'/ham.json', json, () => { console.log('\x1b[34m%s\x1b[0m', '---ham written---'); });
+	console.log('/ham requested');
 	fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/ham.json'));
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType == 'change') {
 			watcher.close();
 			readFile(mail_dir+'/response.json', (err, data) => {
-				if (err) return console.log('\x1b[31m%s\x1b[0m', err);
+				if (err) return console.log(err);
 				if (data) {
-					console.log('\x1b[35m%s\x1b[0m', data);
+					console.log(data);
 					if (data.substring(20, 21) === '1') {
-						console.log('\x1b[32m%s\x1b[0m', '<---ham success response sent--->\n');
+						console.log('<---ham success response sent--->\n');
 						res.status(200).json({ status: 'success' }).end();
 					} else {
-						console.log('\x1b[36m%s\x1b[0m', '<---ham duplicate error response sent--->\n');
+						console.log('<---ham duplicate error response sent--->\n');
 						res.json({
 							status: 'SP_ERR', 
 							message: 'send duplicate mail content to learn'
@@ -93,24 +86,19 @@ app.post('/ham', upload.single('ham'), (req, res) => {
 });
 
 app.put('/test', upload.single('test'), (req, res) => {
-	console.log('\x1b[46m%s\x1b[0m', '/test requested');
-	// clearMailDir();
-	// const json = JSON.stringify(req.body.content);
-	// writeFile(mail_dir+'/test.json', req.body, () => { console.log('\x1b[34m%s\x1b[0m', '---test written---') });
-	// const target_path = mail_dir+'/'+req.file.originalname;
+	console.log('/test requested');
 	fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/test.json'));
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType === 'change') {
 			watcher.close();
 			readFile(mail_dir+'/response.json', (err, data) => {
-				if (err) return console.log('\x1b[31m%s\x1b[0m', err);
+				if (err) return console.log(err);
 				if (data) {
-					// console.log('\x1b[35m%s\x1b[0m', data);
 					const status = data.split(' ')[0];
 					const score = parseFloat(data.split(' ')[1]);
 					const threshold = parseFloat(data.split(' ')[2]);
 					if (status === 'Yes') {
-						console.log('\x1b[32m%s\x1b[0m', '<--- mail is spam ('+score+'/'+threshold+')!!! --->\n');
+						console.log('<--- mail is spam ('+score+'/'+threshold+')!!! --->\n');
 						res.status(200).json({ 
 							status: 'success',
 							score: score,
@@ -118,7 +106,7 @@ app.put('/test', upload.single('test'), (req, res) => {
 							result: 'spam'
 						}).end();
 					} else {
-						console.log('\x1b[32m%s\x1b[0m', '<--- mail is ham ('+score+'/'+threshold+')!!! --->\n');
+						console.log('<--- mail is ham ('+score+'/'+threshold+')!!! --->\n');
 						res.status(200).json({ 
 							status: 'success',
 							score: score,
@@ -133,17 +121,16 @@ app.put('/test', upload.single('test'), (req, res) => {
 });
 
 app.post('/clear', (req, res) => {
-	console.log('\x1b[46m%s\x1b[0m', '/clear requested');
-	// clearMailDir();
+	console.log('/clear requested');
 	const json = 'clear bayes db';
 	writeFile(mail_dir+'/clear.json', json, () => {});
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType === 'change') {
 			watcher.close();
 			readFile(mail_dir+'/response.json', (err, data) => {
-				if (err) return console.log('\x1b[31m%s\x1b[0m', err);
+				if (err) return console.log(err);
 				if (data) {
-					console.log('\x1b[32m%s\x1b[0m', '<--- clear bayes db --->\n');
+					console.log('<--- clear bayes db --->\n');
 					res.status(200).json({ 
 						status: 'success',
 						message: data

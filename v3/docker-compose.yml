@@ -1,11 +1,11 @@
 version: '3'
 
 services:
-  new-mail-txt-api-service:
-    container_name: new-mail-txt-api-app
+  mail-api-service-v3:
+    container_name: mail-api-app-v3
     build:
-      context: ..
+      context: ../
       dockerfile: v3/Dockerfile
-    image: new-mail-txt-api:latest
+    image: mail-api-v3:latest
     ports:
       - "1236:1236"
