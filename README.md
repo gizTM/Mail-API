@@ -2,9 +2,9 @@
 
 Rest API for mail content scanning based on NodeJS, Amavisd and Spamassassin
 
-Most stable --> v3
+To be used --> v1
 
-## Test run server in docker container
+<!-- ## Test v2/v3 in docker container
 
 v1->1234 v2->1235 v3->1236
 
@@ -25,7 +25,7 @@ _this will take some time..._
 in another terminal
 
 ```sh
-docker cp /path/to/new_version/folder <container_name>:/data
+docker cp path/to/folder <container_name>:/data
 ```
 
 back inside docker container
@@ -35,11 +35,11 @@ cd /data && npm install \
 npm run start-dev
 ```
 
-the code changed by `docker cp <source> <dest>` will be recognized and server will restart automatically
+the code changed by `docker cp <source> <dest>` will be recognized and server will restart automatically -->
 
 ## Run server with docker-compose
 
-- v1 **(Not stable)** (2 services w/ shared volume and `inotify-tools`)
+- v1 (2 services w/ shared volume and `inotify-tools`)
 
     ```sh
     cd v1/docker
@@ -132,3 +132,13 @@ _**port: v1-1234 v2-1235 v3-1236**_
 - clear and peek spamassassin trained bayes database
   - `localhost:1236/clear` calls `sa-learn --clear`
   - `localhost:1236/peek` calls `sa-learn --backup`
+
+### Example
+
+```sh
+curl -F "spam=@./mailtest/spam_1/00048.8a64080dbd9d868358a22b655fb1b1cd" -H "Authorization: abcd" -v localhost:1234/spam
+curl -F "ham=@./mailtest/easy_ham_1/0103.3fc5444196f4726ee138fbabc5086ea1" -H "Authorization: abcd" -v localhost:1234/ham
+curl -F "test=@./mailtest/hard_ham_1/00011.acdfa5be40e7b6c3ad3df28c63670c7c" -H "Authorization: abcd" -v -X PUT localhost:1234/test
+curl -H "Authorization: abcd" -v localhost:1234/clear
+curl -H "Authorization: abcd" -v -X POST localhost:1234/peek
+```
