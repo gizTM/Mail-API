@@ -8,7 +8,7 @@ do
 	# cat "$monitor_dir"/"$newfile";
 	case "$newfile" in
 	"spam.json")
-		# echo "sa-learn --spam $monitor_dir/$newfile called"
+		echo "sa-learn --spam $monitor_dir/$newfile called"
 		echo "$(sa-learn --spam "$monitor_dir"/"$newfile")" >"$monitor_dir"/response.json
 		cat "$monitor_dir"/response.json
 		;;
@@ -39,15 +39,15 @@ do
 	"spams.json")
 		path=$(cat "$monitor_dir"/"$newfile")
 		path="$mail_train_dir"/$path
-		echo "sa-learn --spam --progress $path called"
-		echo "$(sa-learn --spam --progress "$path")" >"$monitor_dir"/response.json
+		echo "sa-learn --spam $path called"
+		echo "$(sa-learn --spam "$path")" >"$monitor_dir"/response.json
 		cat "$monitor_dir"/response.json
 		;;
 	"hams.json")
 		path=$(cat "$monitor_dir"/"$newfile")
 		path="$mail_train_dir"/$path
-		echo "sa-learn --ham --progress $path called"
-		echo "$(sa-learn --ham --progress "$path")" >"$monitor_dir"/response.json
+		echo "sa-learn --ham $path called"
+		echo "$(sa-learn --ham "$path")" >"$monitor_dir"/response.json
 		cat "$monitor_dir"/response.json
 		;;
 	esac

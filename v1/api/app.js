@@ -163,8 +163,7 @@ app.post('/clear', (req, res) => {
 				if (data) {
 					console.log('<--- clear bayes db --->');
 					res.status(200).json({ 
-						status: 'success',
-						message: data
+						status: 'success'
 					}).end();
 				}
 			});
@@ -175,7 +174,8 @@ app.post('/clear', (req, res) => {
 app.post('/spams', (req, res) => {
 	console.log('\n/spams requested');
 	const json = req.body.path;
-	writeFile(mail_dir+'/spams.json', json, () => {});
+	if (json === undefined) res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
+	else writeFile(mail_dir+'/spams.json', json, () => {});
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType === 'change') {
 			watcher.close();
@@ -200,7 +200,8 @@ app.post('/spams', (req, res) => {
 app.post('/hams', (req, res) => {
 	console.log('\n/hams requested');
 	const json = req.body.path;
-	writeFile(mail_dir+'/hams.json', json, () => {});
+	if (json === undefined) res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
+	else writeFile(mail_dir+'/hams.json', json, () => {});
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType === 'change') {
 			watcher.close();
