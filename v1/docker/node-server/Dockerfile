@@ -7,5 +7,5 @@ RUN npm install
 
 # RUN ls /data
 
-# CMD [ "npm", "start" ]
-CMD npm run start-dev
+CMD [ "npm", "start" ]
+# CMD npm run start-dev

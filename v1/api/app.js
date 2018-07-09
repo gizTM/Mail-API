@@ -39,7 +39,7 @@ const readFile = (path, callback) => {
 
 //-----------------------------------------------API CODE-----------------------------------------------
 app.post('/spam', upload.single('spam'), (req, res) => {
-	console.log('/spam requested');
+	console.log('\n/spam requested');
 	fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/spam.json'));
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType == 'change') {
@@ -49,10 +49,10 @@ app.post('/spam', upload.single('spam'), (req, res) => {
 				if (data) {
 					// console.log(data);
 					if (data.substring(20, 21) === '1') {
-						console.log('<--- train spam success --->\n');
+						console.log('<--- train spam success --->');
 						res.status(200).json({ status: 'success' }).end();
 					} else {
-						console.log('<--- train spam duplicate --->\n');
+						console.log('<--- train spam duplicate --->');
 						res.json({
 							status: 'SP_ERR', 
 							message: 'send duplicate mail content to learn'
@@ -65,7 +65,7 @@ app.post('/spam', upload.single('spam'), (req, res) => {
 });
 
 app.post('/ham', upload.single('ham'), (req, res) => {
-	console.log('/ham requested');
+	console.log('\n/ham requested');
 	fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/ham.json'));
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType == 'change') {
@@ -75,10 +75,10 @@ app.post('/ham', upload.single('ham'), (req, res) => {
 				if (data) {
 					// console.log(data);
 					if (data.substring(20, 21) === '1') {
-						console.log('<--- train ham success --->\n');
+						console.log('<--- train ham success --->');
 						res.status(200).json({ status: 'success' }).end();
 					} else {
-						console.log('<--- train ham duplicate --->\n');
+						console.log('<--- train ham duplicate --->');
 						res.json({
 							status: 'SP_ERR', 
 							message: 'send duplicate mail content to learn'
@@ -91,7 +91,7 @@ app.post('/ham', upload.single('ham'), (req, res) => {
 });
 
 app.put('/test', upload.single('test'), (req, res) => {
-	console.log('/test requested');
+	console.log('\n/test requested');
 	fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/test.json'));
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 		if (filename === 'response.json' && eventType === 'change') {
@@ -103,7 +103,7 @@ app.put('/test', upload.single('test'), (req, res) => {
 					const score = parseFloat(data.split(' ')[1]);
 					const threshold = parseFloat(data.split(' ')[2]);
 					if (status === 'Yes') {
-						console.log('<--- mail is spam ( '+score+' / '+threshold+' )!!! --->\n');
+						console.log('<--- mail is spam ( '+score+' / '+threshold+' )!!! --->');
 						res.status(200).json({ 
 							status: 'success',
 							score: score,
@@ -111,7 +111,7 @@ app.put('/test', upload.single('test'), (req, res) => {
 							result: 'spam'
 						}).end();
 					} else {
-						console.log('<--- mail is ham ( '+score+' / '+threshold+' )!!! --->\n');
+						console.log('<--- mail is ham ( '+score+' / '+threshold+' )!!! --->');
 						res.status(200).json({ 
 							status: 'success',
 							score: score,
@@ -127,7 +127,7 @@ app.put('/test', upload.single('test'), (req, res) => {
 
 //------------------------------------------- EXTRA API CODE -------------------------------------------
 app.post('/peek', (req, res) => {
-	console.log('/peek requested');
+	console.log('\n/peek requested');
 	const json = 'peek bayes db';
 	writeFile(mail_dir+'/peek.json', json, () => {});
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
@@ -139,7 +139,7 @@ app.post('/peek', (req, res) => {
 					const backup = data.split('\n');
 					const num_spam = backup[1].split('\t')[1];
 					const num_ham = backup[2].split('\t')[1];
-					console.log('<--- peek bayes db --->\n');
+					console.log('<--- peek bayes db --->');
 					res.status(200).json({ 
 						status: 'success',
 						spam: num_spam,
@@ -152,7 +152,7 @@ app.post('/peek', (req, res) => {
 });
 
 app.post('/clear', (req, res) => {
-	console.log('/clear requested');
+	console.log('\n/clear requested');
 	const json = 'clear bayes db';
 	writeFile(mail_dir+'/clear.json', json, () => {});
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
@@ -161,7 +161,7 @@ app.post('/clear', (req, res) => {
 			readFile(mail_dir+'/response.json', (err, data) => {
 				if (err) return console.log(err);
 				if (data) {
-					console.log('<--- clear bayes db --->\n');
+					console.log('<--- clear bayes db --->');
 					res.status(200).json({ 
 						status: 'success',
 						message: data
@@ -173,7 +173,7 @@ app.post('/clear', (req, res) => {
 });
 
 app.post('/spams', (req, res) => {
-	console.log('/spams requested');
+	console.log('\n/spams requested');
 	const json = req.body.path;
 	writeFile(mail_dir+'/spams.json', json, () => {});
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
@@ -183,7 +183,7 @@ app.post('/spams', (req, res) => {
 				if (err) return console.log(err);
 				if (data) {
 					// console.log(data);
-					console.log('<--- trained spams ( folder: '+json+' ) --->\n');
+					console.log('<--- trained spams ( folder: '+json+' ) --->');
 					if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
 					else {
 						res.json({ 
@@ -198,7 +198,7 @@ app.post('/spams', (req, res) => {
 });
 
 app.post('/hams', (req, res) => {
-	console.log('/hams requested');
+	console.log('\n/hams requested');
 	const json = req.body.path;
 	writeFile(mail_dir+'/hams.json', json, () => {});
 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
@@ -208,7 +208,7 @@ app.post('/hams', (req, res) => {
 				if (err) return console.log(err);
 				if (data) {
 					// console.log(data);
-					console.log('<--- trained hams ( folder: '+json+' ) --->\n');
+					console.log('<--- trained hams ( folder: '+json+' ) --->');
 					if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
 					else {
 						res.json({ 
