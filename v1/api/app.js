@@ -16,6 +16,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+	if (!req.headers.authorization) return res.status(400).json({ error: 'No authentication token' });
+	next();
+});
+
 //-------------------------------------------HELPER FUNCTIONS-------------------------------------------
 const writeFile = (path, contents, callback) => {
 	mkdirp(getDirName(path), (err) => {
@@ -42,12 +47,12 @@ app.post('/spam', upload.single('spam'), (req, res) => {
 			readFile(mail_dir+'/response.json', (err, data) => {
 				if (err) return console.log(err);
 				if (data) {
-					console.log(data);
+					// console.log(data);
 					if (data.substring(20, 21) === '1') {
-						console.log('<---spam success response sent--->\n');
+						console.log('<--- train spam success --->\n');
 						res.status(200).json({ status: 'success' }).end();
 					} else {
-						console.log('<---spam duplicate error response sent--->\n');
+						console.log('<--- train spam duplicate --->\n');
 						res.json({
 							status: 'SP_ERR', 
 							message: 'send duplicate mail content to learn'
@@ -68,12 +73,12 @@ app.post('/ham', upload.single('ham'), (req, res) => {
 			readFile(mail_dir+'/response.json', (err, data) => {
 				if (err) return console.log(err);
 				if (data) {
-					console.log(data);
+					// console.log(data);
 					if (data.substring(20, 21) === '1') {
-						console.log('<---ham success response sent--->\n');
+						console.log('<--- train ham success --->\n');
 						res.status(200).json({ status: 'success' }).end();
 					} else {
-						console.log('<---ham duplicate error response sent--->\n');
+						console.log('<--- train ham duplicate --->\n');
 						res.json({
 							status: 'SP_ERR', 
 							message: 'send duplicate mail content to learn'
@@ -98,7 +103,7 @@ app.put('/test', upload.single('test'), (req, res) => {
 					const score = parseFloat(data.split(' ')[1]);
 					const threshold = parseFloat(data.split(' ')[2]);
 					if (status === 'Yes') {
-						console.log('<--- mail is spam ('+score+'/'+threshold+')!!! --->\n');
+						console.log('<--- mail is spam ( '+score+' / '+threshold+' )!!! --->\n');
 						res.status(200).json({ 
 							status: 'success',
 							score: score,
@@ -106,7 +111,7 @@ app.put('/test', upload.single('test'), (req, res) => {
 							result: 'spam'
 						}).end();
 					} else {
-						console.log('<--- mail is ham ('+score+'/'+threshold+')!!! --->\n');
+						console.log('<--- mail is ham ( '+score+' / '+threshold+' )!!! --->\n');
 						res.status(200).json({ 
 							status: 'success',
 							score: score,
@@ -114,6 +119,32 @@ app.put('/test', upload.single('test'), (req, res) => {
 							result: 'ham'
 						}).end();
 					}
+				}
+			});
+		}
+	});
+});
+
+//------------------------------------------- EXTRA API CODE -------------------------------------------
+app.post('/peek', (req, res) => {
+	console.log('/peek requested');
+	const json = 'peek bayes db';
+	writeFile(mail_dir+'/peek.json', json, () => {});
+	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+		if (filename === 'response.json' && eventType === 'change') {
+			watcher.close();
+			readFile(mail_dir+'/response.json', (err, data) => {
+				if (err) return console.log(err);
+				if (data) {
+					const backup = data.split('\n');
+					const num_spam = backup[1].split('\t')[1];
+					const num_ham = backup[2].split('\t')[1];
+					console.log('<--- peek bayes db --->\n');
+					res.status(200).json({ 
+						status: 'success',
+						spam: num_spam,
+						ham: num_ham
+					}).end();
 				}
 			});
 		}
@@ -140,6 +171,57 @@ app.post('/clear', (req, res) => {
 		}
 	});
 });
+
+app.post('/spams', (req, res) => {
+	console.log('/spams requested');
+	const json = req.body.path;
+	writeFile(mail_dir+'/spams.json', json, () => {});
+	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+		if (filename === 'response.json' && eventType === 'change') {
+			watcher.close();
+			readFile(mail_dir+'/response.json', (err, data) => {
+				if (err) return console.log(err);
+				if (data) {
+					// console.log(data);
+					console.log('<--- trained spams ( folder: '+json+' ) --->\n');
+					if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
+					else {
+						res.json({ 
+							status: 'SP_ERR',
+							message: 'send duplicate mail content to learn'
+						}).end();
+					}
+				}
+			});
+		}
+	});
+});
+
+app.post('/hams', (req, res) => {
+	console.log('/hams requested');
+	const json = req.body.path;
+	writeFile(mail_dir+'/hams.json', json, () => {});
+	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+		if (filename === 'response.json' && eventType === 'change') {
+			watcher.close();
+			readFile(mail_dir+'/response.json', (err, data) => {
+				if (err) return console.log(err);
+				if (data) {
+					// console.log(data);
+					console.log('<--- trained hams ( folder: '+json+' ) --->\n');
+					if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
+					else {
+						res.json({ 
+							status: 'SP_ERR', 
+							message: 'send duplicate mail content to learn'
+						}).end();
+					}
+				}
+			});
+		}
+	});
+});
+//------------------------------------------- EXTRA API CODE -------------------------------------------
 //-----------------------------------------------API CODE-----------------------------------------------
 app.use((req, res, next) => {
 	const err = new Error('Not Found');

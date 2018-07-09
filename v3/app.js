@@ -113,7 +113,7 @@ app.put('/test', (req, res) => {
 
 //------------------------------------------- EXTRA API CODE -------------------------------------------
 app.post('/peek', (req, res) => {
-	console.log('\x1b[46m%s\x1b[0m', '/peek requested');
+	console.log('/peek requested');
 	cmd.get('sa-learn --backup | grep "^v"', (err, data, stderr) => {
 		if (err) console.log(err);
 		else {
@@ -145,7 +145,6 @@ app.post('/clear', (req, res) => {
 
 app.post('/spams', (req, res) => {
 	console.log('/spams requested');
-	// console.log('\x1b[36m%s\x1b[0m', req.body);
 	cmd.get('sa-learn --spam /data/mailtest/'+JSON.parse(req.body).path, (err, data, stderr) => {
 		if (err) console.log(err);
 		else {
