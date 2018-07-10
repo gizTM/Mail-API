@@ -174,8 +174,10 @@ app.post('/clear', (req, res) => {
 app.post('/spams', (req, res) => {
 	console.log('\n/spams requested');
 	const json = req.body.path;
-	if (json === undefined) res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
-	else {
+	if (json === undefined) {
+		console.log('<--- wrong format body --->');
+		res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
+	} else {
 		writeFile(mail_dir+'/spams.json', json, () => {});
 		const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 			if (filename === 'response.json' && eventType === 'change') {
@@ -202,8 +204,10 @@ app.post('/spams', (req, res) => {
 app.post('/hams', (req, res) => {
 	console.log('\n/hams requested');
 	const json = req.body.path;
-	if (json === undefined) res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
-	else {
+	if (json === undefined) {
+		console.log('<--- wrong format body --->');
+		res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
+	} else {
 		writeFile(mail_dir+'/hams.json', json, () => {});
 		const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
 			if (filename === 'response.json' && eventType === 'change') {
@@ -239,7 +243,7 @@ app.use((err, req, res, next) => {
 	res.json({
 		error: {
 			message: err.message,
-		},
+		}
 	});
 	next(err);
 });
@@ -256,5 +260,4 @@ app.use('/', (req, res) => {
 
 app.listen(config.httpPort, () => {
 	console.log('Listening on port ' + config.httpPort);
-	console.log();
 });
