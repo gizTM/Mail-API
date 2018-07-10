@@ -136,5 +136,6 @@ _**port: v1-1234 v2-1235 v3-1236**_
 ### Example
 
 ```sh
-
+cURL Testing
+curl -X PUT -H "Content-Type: multipart/form-data" -H "Authorization: ore" -F "test=@./mail1.txt" localhost:1234/test
 ```
