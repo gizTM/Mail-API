@@ -175,52 +175,56 @@ app.post('/spams', (req, res) => {
 	console.log('\n/spams requested');
 	const json = req.body.path;
 	if (json === undefined) res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
-	else writeFile(mail_dir+'/spams.json', json, () => {});
-	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
-		if (filename === 'response.json' && eventType === 'change') {
-			watcher.close();
-			readFile(mail_dir+'/response.json', (err, data) => {
-				if (err) return console.log(err);
-				if (data) {
-					// console.log(data);
-					console.log('<--- trained spams ( folder: '+json+' ) --->');
-					if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
-					else {
-						res.json({ 
-							status: 'SP_ERR',
-							message: 'send duplicate mail content to learn'
-						}).end();
+	else {
+		writeFile(mail_dir+'/spams.json', json, () => {});
+		const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+			if (filename === 'response.json' && eventType === 'change') {
+				watcher.close();
+				readFile(mail_dir+'/response.json', (err, data) => {
+					if (err) return console.log(err);
+					if (data) {
+						// console.log(data);
+						console.log('<--- trained spams ( folder: '+json+' ) --->');
+						if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
+						else {
+							res.json({ 
+								status: 'SP_ERR',
+								message: 'send duplicate mail content to learn'
+							}).end();
+						}
 					}
-				}
-			});
-		}
-	});
+				});
+			}
+		});
+	}
 });
 
 app.post('/hams', (req, res) => {
 	console.log('\n/hams requested');
 	const json = req.body.path;
 	if (json === undefined) res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
-	else writeFile(mail_dir+'/hams.json', json, () => {});
-	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
-		if (filename === 'response.json' && eventType === 'change') {
-			watcher.close();
-			readFile(mail_dir+'/response.json', (err, data) => {
-				if (err) return console.log(err);
-				if (data) {
-					// console.log(data);
-					console.log('<--- trained hams ( folder: '+json+' ) --->');
-					if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
-					else {
-						res.json({ 
-							status: 'SP_ERR', 
-							message: 'send duplicate mail content to learn'
-						}).end();
+	else {
+		writeFile(mail_dir+'/hams.json', json, () => {});
+		const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+			if (filename === 'response.json' && eventType === 'change') {
+				watcher.close();
+				readFile(mail_dir+'/response.json', (err, data) => {
+					if (err) return console.log(err);
+					if (data) {
+						// console.log(data);
+						console.log('<--- trained hams ( folder: '+json+' ) --->');
+						if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
+						else {
+							res.json({ 
+								status: 'SP_ERR', 
+								message: 'send duplicate mail content to learn'
+							}).end();
+						}
 					}
-				}
-			});
-		}
-	});
+				});
+			}
+		});
+	}
 });
 //------------------------------------------- EXTRA API CODE -------------------------------------------
 //-----------------------------------------------API CODE-----------------------------------------------

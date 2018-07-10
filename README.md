@@ -136,9 +136,5 @@ _**port: v1-1234 v2-1235 v3-1236**_
 ### Example
 
 ```sh
-curl -F "spam=@./mailtest/spam_1/00048.8a64080dbd9d868358a22b655fb1b1cd" -H "Authorization: abcd" -v localhost:1234/spam
-curl -F "ham=@./mailtest/easy_ham_1/0103.3fc5444196f4726ee138fbabc5086ea1" -H "Authorization: abcd" -v localhost:1234/ham
-curl -F "test=@./mailtest/hard_ham_1/00011.acdfa5be40e7b6c3ad3df28c63670c7c" -H "Authorization: abcd" -v -X PUT localhost:1234/test
-curl -H "Authorization: abcd" -v localhost:1234/clear
-curl -H "Authorization: abcd" -v -X POST localhost:1234/peek
+
 ```
