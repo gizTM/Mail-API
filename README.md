@@ -140,5 +140,5 @@ cURL Testing
 curl -X PUT -H "Content-Type: multipart/form-data" -H "Authorization: abcd" -F "test=@./mail1.txt" localhost:1234/test
 curl -X POST -H "Content-Type: application/json" -H "Authorization: abcd" -d '{"path": "spam_1"}' localhost:1234/spams
 curl -X POST -H "Authorization: abcd" localhost:1234/clear
-** with -m (numberic) for response time 
+** with -m (numberic) for response time **
 ```
