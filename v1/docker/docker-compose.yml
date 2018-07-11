@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+
   mail-api-service-v1:
     container_name: mail-api-app-v1
     build:

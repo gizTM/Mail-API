@@ -1,0 +1,19 @@
+{
+  "restartable": "rs",
+  "ignore": [
+    ".git",
+    "node_modules/**/node_modules",
+    ".circleci"
+  ],
+  "verbose": true,
+  "execMap": {
+    "js": "node --harmony"
+  },
+  "events": {
+    "crash": "fuser -k 1234/tcp"
+  },
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "ext": "js,json"
+}
