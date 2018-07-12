@@ -53,18 +53,11 @@ const pop = (key, callback) => {
 	client.rpop(key, callback);
 };
 
-const addToQueue = (msg_id) => {
-	client.hmset('toLearn', 'msg_id', msg_id, (err, reply) => {
-		console.log('Error: ', err);
-		console.log('Reply: ', reply);
+const range = (key, start, stop) => {
+	client.lrange(key, start, stop, (err, reply) => {
+		if (err) console.log('Error: ', err);
+		else if (reply) console.log('Reply: ', reply);
 	});
-};
-   
-const getFromQueue = (key) => {
-	client.hgetall(key, (err, reply) => {
-		console.log('Error: ', err);
-		console.log('Reply: ', reply);
-	})
 };
 
 //-------------------------------------------HELPER FUNCTIONS-------------------------------------------
@@ -76,9 +69,11 @@ app.post('/spam', upload.single('spam'), (req, res) => {
 		if (err) return console.log(err);
 		if (data) {
 			// console.log('data: ', data);
-			push('toLearn', data, (err, reply) => {
-				console.log('position in queue: ', reply);
+			push('toLearn', '{ msg_id: '+req.id+', method: spam, data: '+data+' }', (err, reply) => {
+				if (err) console.log('Error: ', err);
+				else if (reply) console.log('position in queue: ', reply);
 			});
+			range('toLearn', 0, -1);
 		}
 	});
 });
@@ -96,8 +91,8 @@ app.put('/test', upload.single('test'), (req, res) => {
 //------------------------------------------- EXTRA API CODE -------------------------------------------
 app.post('/peek', (req, res) => {
 	console.log('\n/peek requested');
-	getFromQueue('toLearn');
-	getFromQueue('learned');
+	range('toLearn', 0, -1);
+	range('learned', 0, -1);
 });
 
 app.post('/clear', (req, res) => {
