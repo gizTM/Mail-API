@@ -2,7 +2,7 @@ version: '3'
 
 services:
 
-  mail-api-service-v1:
+  mail-api-service:
     container_name: mail-api-redis-app
     build:
       context: ../../
@@ -15,7 +15,7 @@ services:
     depends_on:
       - redis
 
-  spamassassin-service-v1:
+  spamassassin-service:
     container_name: spamassassin-redis-app
     build:
       context: ../../

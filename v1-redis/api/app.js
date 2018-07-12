@@ -49,13 +49,6 @@ const push = (key, value, callback) => {
 const pop = (key, callback) => {
 	client.rpop(key, callback);
 };
-
-const range = (key) => {
-	client.lrange(key, 0, -1, (err, reply) => {
-		if (err) console.log('Error: ', err);
-		else if (reply) console.log('Reply: ', reply);
-	});
-};
 //-------------------------------------------HELPER FUNCTIONS-------------------------------------------
 
 //-----------------------------------------------API CODE-----------------------------------------------
@@ -63,7 +56,7 @@ app.post('/spam', upload.single('spam'), (req, res) => {
 	console.log('\n/spam requested');
 	client.incr('sc', (err, counter) => {
 		if (err) return console.log(err);
-		fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/spam/'+counter+'.json'));
+		fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/spam/'+counter));
 		push('toLearnSpam', counter, (err, reply) => {
 			if (err) console.log('Error: ', err);
 			else if (reply) console.log('position in queue: ', reply);
@@ -76,7 +69,7 @@ app.post('/ham', upload.single('ham'), (req, res) => {
 	console.log('\n/ham requested');
 	client.incr('hc', (err, counter) => {
 		if (err) return console.log(err);
-		fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/ham/'+counter+'.json'));
+		fs.createReadStream(req.file.path).pipe(fs.createWriteStream(mail_dir+'/ham/'+counter));
 		push('toLearnHam', counter, (err, reply) => {
 			if (err) console.log('Error: ', err);
 			else if (reply) console.log('position in queue: ', reply);
@@ -126,110 +119,110 @@ app.post('/clearRedis', (req, res) => {
 
 });
 
-// app.post('/peek', (req, res) => {
-// 	console.log('\n/peek requested');
-// 	const json = 'peek bayes db';
-// 	writeFile(mail_dir+'/peek.json', json, () => {});
-// 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
-// 		if (filename === 'response.json' && eventType === 'change') {
-// 			watcher.close();
-// 			readFile(mail_dir+'/response.json', (err, data) => {
-// 				if (err) return console.log(err);
-// 				if (data) {
-// 					const backup = data.split('\n');
-// 					const num_spam = backup[1].split('\t')[1];
-// 					const num_ham = backup[2].split('\t')[1];
-// 					console.log('<--- peek bayes db --->');
-// 					res.status(200).json({ 
-// 						status: 'success',
-// 						spam: num_spam,
-// 						ham: num_ham
-// 					}).end();
-// 				}
-// 			});
-// 		}
-// 	});
-// });
+app.post('/peek', (req, res) => {
+	console.log('\n/peek requested');
+	const json = 'peek bayes db';
+	writeFile(mail_dir+'/peek.json', json, () => {});
+	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+		if (filename === 'response.json' && eventType === 'change') {
+			watcher.close();
+			readFile(mail_dir+'/response.json', (err, data) => {
+				if (err) return console.log(err);
+				if (data) {
+					const backup = data.split('\n');
+					const num_spam = backup[1].split('\t')[1];
+					const num_ham = backup[2].split('\t')[1];
+					console.log('<--- peek bayes db --->');
+					res.status(200).json({ 
+						status: 'success',
+						spam: num_spam,
+						ham: num_ham
+					}).end();
+				}
+			});
+		}
+	});
+});
 
-// app.post('/clear', (req, res) => {
-// 	console.log('\n/clear requested');
-// 	const json = 'clear bayes db';
-// 	writeFile(mail_dir+'/clear.json', json, () => {});
-// 	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
-// 		if (filename === 'response.json' && eventType === 'change') {
-// 			watcher.close();
-// 			readFile(mail_dir+'/response.json', (err, data) => {
-// 				if (err) return console.log(err);
-// 				if (data) {
-// 					console.log('<--- clear bayes db --->');
-// 					res.status(200).json({ 
-// 						status: 'success'
-// 					}).end();
-// 				}
-// 			});
-// 		}
-// 	});
-// });
+app.post('/clear', (req, res) => {
+	console.log('\n/clear requested');
+	const json = 'clear bayes db';
+	writeFile(mail_dir+'/clear.json', json, () => {});
+	const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+		if (filename === 'response.json' && eventType === 'change') {
+			watcher.close();
+			readFile(mail_dir+'/response.json', (err, data) => {
+				if (err) return console.log(err);
+				if (data) {
+					console.log('<--- clear bayes db --->');
+					res.status(200).json({ 
+						status: 'success'
+					}).end();
+				}
+			});
+		}
+	});
+});
 
-// app.post('/spams', (req, res) => {
-// 	console.log('\n/spams requested');
-// 	const json = req.body.path;
-// 	if (json === undefined) {
-// 		console.log('<--- wrong format body --->');
-// 		res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
-// 	} else {
-// 		writeFile(mail_dir+'/spams.json', json, () => {});
-// 		const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
-// 			if (filename === 'response.json' && eventType === 'change') {
-// 				watcher.close();
-// 				readFile(mail_dir+'/response.json', (err, data) => {
-// 					if (err) return console.log(err);
-// 					if (data) {
-// 						// console.log(data);
-// 						console.log('<--- trained spams ( folder: '+json+' ) --->');
-// 						if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
-// 						else {
-// 							res.json({ 
-// 								status: 'SP_ERR',
-// 								message: 'send duplicate mail content to learn'
-// 							}).end();
-// 						}
-// 					}
-// 				});
-// 			}
-// 		});
-// 	}
-// });
+app.post('/spams', (req, res) => {
+	console.log('\n/spams requested');
+	const json = req.body.path;
+	if (json === undefined) {
+		console.log('<--- wrong format body --->');
+		res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
+	} else {
+		writeFile(mail_dir+'/spams.json', json, () => {});
+		const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+			if (filename === 'response.json' && eventType === 'change') {
+				watcher.close();
+				readFile(mail_dir+'/response.json', (err, data) => {
+					if (err) return console.log(err);
+					if (data) {
+						// console.log(data);
+						console.log('<--- trained spams ( folder: '+json+' ) --->');
+						if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
+						else {
+							res.json({ 
+								status: 'SP_ERR',
+								message: 'send duplicate mail content to learn'
+							}).end();
+						}
+					}
+				});
+			}
+		});
+	}
+});
 
-// app.post('/hams', (req, res) => {
-// 	console.log('\n/hams requested');
-// 	const json = req.body.path;
-// 	if (json === undefined) {
-// 		console.log('<--- wrong format body --->');
-// 		res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
-// 	} else {
-// 		writeFile(mail_dir+'/hams.json', json, () => {});
-// 		const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
-// 			if (filename === 'response.json' && eventType === 'change') {
-// 				watcher.close();
-// 				readFile(mail_dir+'/response.json', (err, data) => {
-// 					if (err) return console.log(err);
-// 					if (data) {
-// 						// console.log(data);
-// 						console.log('<--- trained hams ( folder: '+json+' ) --->');
-// 						if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
-// 						else {
-// 							res.json({ 
-// 								status: 'SP_ERR', 
-// 								message: 'send duplicate mail content to learn'
-// 							}).end();
-// 						}
-// 					}
-// 				});
-// 			}
-// 		});
-// 	}
-// });
+app.post('/hams', (req, res) => {
+	console.log('\n/hams requested');
+	const json = req.body.path;
+	if (json === undefined) {
+		console.log('<--- wrong format body --->');
+		res.status(400).json({ status: 'WRONG_FORMAT', message: 'format should be application/json' });
+	} else {
+		writeFile(mail_dir+'/hams.json', json, () => {});
+		const watcher = fs.watch(mail_dir, { persistent: false }, (eventType, filename) => {
+			if (filename === 'response.json' && eventType === 'change') {
+				watcher.close();
+				readFile(mail_dir+'/response.json', (err, data) => {
+					if (err) return console.log(err);
+					if (data) {
+						// console.log(data);
+						console.log('<--- trained hams ( folder: '+json+' ) --->');
+						if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
+						else {
+							res.json({ 
+								status: 'SP_ERR', 
+								message: 'send duplicate mail content to learn'
+							}).end();
+						}
+					}
+				});
+			}
+		});
+	}
+});
 
 //------------------------------------------- EXTRA API CODE -------------------------------------------
 //-----------------------------------------------API CODE-----------------------------------------------
