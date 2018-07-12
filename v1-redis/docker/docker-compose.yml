@@ -7,10 +7,12 @@ services:
     build:
       context: ../../
       dockerfile: ./v1-redis/docker/node-server/Dockerfile
-    image: mail-api-redis:latest
+    image: mail-api-v1:latest
     ports: 
       - "1234:1234"
-    depends_on: 
+    volumes:
+      - mail-content:/mail_content
+    depends_on:
       - redis
 
   spamassassin-service-v1:
@@ -18,8 +20,10 @@ services:
     build:
       context: ../../
       dockerfile: ./v1-redis/docker/spamassassin/Dockerfile
-    image: spamassassin-redis:latest
-    depends_on: 
+    image: my-spamassassin:latest
+    volumes:
+      - mail-content:/mail_content
+    depends_on:
       - redis
 
   redis:
@@ -27,3 +31,6 @@ services:
     image: redis:4.0
     ports: 
       - "6379:6379"
+
+volumes:
+  mail-content:
