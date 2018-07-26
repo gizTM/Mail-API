@@ -1,6 +1,6 @@
 #!/bin/bash
 monitor_dir="/mail_content"
-# mail_train_dir="/mailtest"
+mail_train_dir="/mailtest"
 
 # shellcheck disable=SC2034
 while true; do

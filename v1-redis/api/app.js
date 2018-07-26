@@ -3,14 +3,13 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const config = require('./config');
 const fs = require('fs');
-const mkdirp = require('mkdirp');
-const getDirName = require('path').dirname;
 const mail_dir = '/mail_content';
 const multer  = require('multer');
 const upload = multer({ dest: mail_dir+'/' });
 const redis = require('redis');
 const addRequestId = require('express-request-id')();
 const cmd = require('node-cmd');
+const { writeFile, readFile, push, pop } = require('./helperFunction');
 // require('console-stamp')(console, { pattern: 'HH:MM:ss.l', label: false });
 
 const app = express();
@@ -27,30 +26,6 @@ app.use((req, res, next) => {
 client.on('error', err => { console.log('Error ' + err); });
 client.on('ready', err => { console.log('Redis client is ready!!!'); });
 
-//-------------------------------------------HELPER FUNCTIONS-------------------------------------------
-const writeFile = (path, contents, callback) => {
-	mkdirp(getDirName(path), (err) => {
-		if (err) return console.log('Error: ', err);
-		fs.writeFile(path, contents, 'utf-8', callback);
-	});
-};
-
-const readFile = (path, callback) => {
-	mkdirp(getDirName(path), (err) => {
-		if (err) return console.log('Error: ', err);
-		fs.readFile(path, 'utf-8', callback);
-	});
-};
-
-const push = (key, value, callback) => {
-	client.lpush(key, value, callback);
-};
-
-const pop = (key, callback) => {
-	client.rpop(key, callback);
-};
-//-------------------------------------------HELPER FUNCTIONS-------------------------------------------
-
 //-----------------------------------------------API CODE-----------------------------------------------
 app.post('/spam', upload.single('spam'), (req, res) => {
 	console.log('\n/spam requested');
@@ -61,7 +36,7 @@ app.post('/spam', upload.single('spam'), (req, res) => {
 			if (err) console.log('Error: ', err);
 			else if (reply) console.log('position in queue: ', reply);
 		});
-		res.status(200).json({ status: 'spam mail queued to train' }).end();
+		res.status(200).json({ status: 'spam mail queued to train' });
 	});
 });
 
@@ -74,7 +49,7 @@ app.post('/ham', upload.single('ham'), (req, res) => {
 			if (err) console.log('Error: ', err);
 			else if (reply) console.log('position in queue: ', reply);
 		});
-		res.status(200).json({ status: 'ham mail queued to train' }).end();
+		res.status(200).json({ status: 'ham mail queued to train' });
 	});
 });
 
@@ -97,7 +72,7 @@ app.put('/test', upload.single('test'), (req, res) => {
 							score: score,
 							threshold: threshold,
 							result: 'spam'
-						}).end();
+						});
 					} else {
 						console.log('<--- mail is ham ( '+score+' / '+threshold+' )!!! --->');
 						res.status(200).json({ 
@@ -105,7 +80,7 @@ app.put('/test', upload.single('test'), (req, res) => {
 							score: score,
 							threshold: threshold,
 							result: 'ham'
-						}).end();
+						});
 					}
 				}
 			});
@@ -116,7 +91,10 @@ app.put('/test', upload.single('test'), (req, res) => {
 //------------------------------------------- EXTRA API CODE -------------------------------------------
 app.post('/clearRedis', (req, res) => {
 	console.log('\n/clearRedis requested');
-
+	client.flushall((err, reply) => {
+		if (err) console.log(err);
+		if (reply) console.log(reply);
+	});
 });
 
 app.post('/peek', (req, res) => {
@@ -137,7 +115,7 @@ app.post('/peek', (req, res) => {
 						status: 'success',
 						spam: num_spam,
 						ham: num_ham
-					}).end();
+					});
 				}
 			});
 		}
@@ -157,7 +135,7 @@ app.post('/clear', (req, res) => {
 					console.log('<--- clear bayes db --->');
 					res.status(200).json({ 
 						status: 'success'
-					}).end();
+					});
 				}
 			});
 		}
@@ -180,12 +158,12 @@ app.post('/spams', (req, res) => {
 					if (data) {
 						// console.log(data);
 						console.log('<--- trained spams ( folder: '+json+' ) --->');
-						if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
+						if (data.substring(20, 21) !== '0') res.json({ status: 'success' });
 						else {
 							res.json({ 
 								status: 'SP_ERR',
 								message: 'send duplicate mail content to learn'
-							}).end();
+							});
 						}
 					}
 				});
@@ -210,12 +188,12 @@ app.post('/hams', (req, res) => {
 					if (data) {
 						// console.log(data);
 						console.log('<--- trained hams ( folder: '+json+' ) --->');
-						if (data.substring(20, 21) !== '0') res.json({ status: 'success' }).end();
+						if (data.substring(20, 21) !== '0') res.json({ status: 'success' });
 						else {
 							res.json({ 
 								status: 'SP_ERR', 
 								message: 'send duplicate mail content to learn'
-							}).end();
+							});
 						}
 					}
 				});

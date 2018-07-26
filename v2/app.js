@@ -33,13 +33,13 @@ app.post('/spams', (req, res) => {
 			console.log(data);
 			if (data.substring(20, 21) !== '0') {
 				console.log('<--- spams (folder) success --->');
-				res.json({ status: 'success' }).end();
+				res.json({ status: 'success' });
 			} else {
 				console.log('<--- spams (folder) all duplicate --->');
 				res.json({ 
 					status: 'SP_ERR', 
 					message: 'send duplicate mail content to learn'
-				}).end();
+				});
 			}
 		}
 	});
@@ -53,13 +53,13 @@ app.post('/hams', (req, res) => {
 			console.log(data);
 			if (data.substring(20, 21) !== '0') {
 				console.log('<--- hams (folder) success --->');
-				res.json({ status: 'success' }).end();
+				res.json({ status: 'success' });
 			} else {
 				console.log('<--- hams (folder) all duplicate --->');
 				res.json({ 
 					status: 'SP_ERR', 
 					message: 'send duplicate mail content to learn'
-				}).end();
+				});
 			}
 		}
 	});
@@ -75,13 +75,13 @@ app.post('/spam', upload.single('spam'), (req, res) => {
 				console.log(data);
 				if (data.substring(20, 21) === '1') {
 					console.log('<---spam success --->\n');
-					res.status(200).json({ status: 'success' }).end();
+					res.status(200).json({ status: 'success' });
 				} else {
 					console.log('<---spam duplicate --->\n');
 					res.json({
 						status: 'SP_ERR',
 						message: 'send duplicate mail content to learn'
-					}).end();
+					});
 				}
 			}
 		}
@@ -98,13 +98,13 @@ app.post('/ham', upload.single('ham'), (req, res) => {
 				console.log(data);
 				if (data.substring(20, 21) === '1') {
 					console.log('<---ham success --->\n');
-					res.status(200).json({ status: 'success' }).end();
+					res.status(200).json({ status: 'success' });
 				} else {
 					console.log('<---ham duplicate --->\n');
 					res.json({
 						status: 'SP_ERR', 
 						message: 'send duplicate mail content to learn'
-					}).end();
+					});
 				}
 			}
 		});
@@ -132,7 +132,7 @@ app.put('/test', upload.single('test'), (req, res) => {
 					score: score,
 					threshold: threshold,
 					result: 'spam'
-				}).end();
+				});
 			} else {
 				console.log('<--- mail is ham ('+score+'/'+threshold+')!!! --->\n');
 				res.status(200).json({ 
@@ -140,7 +140,7 @@ app.put('/test', upload.single('test'), (req, res) => {
 					score: score,
 					threshold: threshold,
 					result: 'ham'
-				}).end();
+				});
 			}
 		}
 	});
@@ -152,7 +152,7 @@ app.post('/clear', (req, res) => {
 		if (err) console.log(err);
 		else {
 			console.log('<--- clear success --->\n');
-			res.json({ status: 'success' }).end();
+			res.json({ status: 'success' });
 		}
 	});
 });

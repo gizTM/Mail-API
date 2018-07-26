@@ -40,13 +40,13 @@ app.post('/spam', (req, res) => {
 				console.log('spam train result: ', data.substring(0, data.length-1));
 				if (data.substring(20, 21) === '1') {
 					console.log('<--- train spam success --->\n');
-					res.status(200).json({ status: 'success' }).end();
+					res.status(200).json({ status: 'success' });
 				} else {
 					console.log('<--- train spam duplicate --->\n');
 					res.json({
 						status: 'SP_ERR',
 						message: 'send duplicate mail content to learn'
-					}).end();
+					});
 				}
 			}
 		}
@@ -63,13 +63,13 @@ app.post('/ham', (req, res) => {
 				console.log(data.substring(0, data.length-1));
 				if (data.substring(20, 21) === '1') {
 					console.log('<---ham success --->\n');
-					res.status(200).json({ status: 'success' }).end();
+					res.status(200).json({ status: 'success' });
 				} else {
 					console.log('<---ham duplicate --->\n');
 					res.json({
 						status: 'SP_ERR', 
 						message: 'send duplicate mail content to learn'
-					}).end();
+					});
 				}
 			}
 		});
@@ -97,7 +97,7 @@ app.put('/test', (req, res) => {
 					score: score,
 					threshold: threshold,
 					result: 'spam'
-				}).end();
+				});
 			} else {
 				console.log('<--- mail is ham ( '+score+' / '+threshold+' ) !!! --->\n');
 				res.status(200).json({ 
@@ -105,7 +105,7 @@ app.put('/test', (req, res) => {
 					score: score,
 					threshold: threshold,
 					result: 'ham'
-				}).end();
+				});
 			}
 		}
 	});
@@ -126,7 +126,7 @@ app.post('/peek', (req, res) => {
 				status: 'success',
 				spam: num_spam,
 				ham: num_ham
-			}).end();
+			});
 		}
 	});
 });
@@ -138,7 +138,7 @@ app.post('/clear', (req, res) => {
 		else {
 			// console.log(data.substring(0, data.length-1));
 			console.log('<--- clear success --->\n');
-			res.json({ status: 'success' }).end();
+			res.json({ status: 'success' });
 		}
 	});
 });
@@ -151,13 +151,13 @@ app.post('/spams', (req, res) => {
 			console.log(data.substring(0, data.length-1));
 			if (data.substring(20, 21) !== '0') {
 				console.log('<--- spams (folder) success --->\n');
-				res.json({ status: 'success' }).end();
+				res.json({ status: 'success' });
 			} else {
 				console.log('<--- spams (folder) all duplicate --->\n');
 				res.json({ 
 					status: 'SP_ERR', 
 					message: 'send duplicate mail content to learn'
-				}).end();
+				});
 			}
 		}
 	});
@@ -172,13 +172,13 @@ app.post('/hams', (req, res) => {
 			console.log(data.substring(0, data.length-1));
 			if (data.substring(20, 21) !== '0') {
 				console.log('<--- hams (folder) success --->\n');
-				res.json({ status: 'success' }).end();
+				res.json({ status: 'success' });
 			} else {
 				console.log('<--- hams (folder) all duplicate --->\n');
 				res.json({ 
 					status: 'SP_ERR', 
 					message: 'send duplicate mail content to learn'
-				}).end();
+				});
 			}
 		}
 	});

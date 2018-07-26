@@ -2,7 +2,7 @@
 
 Rest API for mail content scanning based on NodeJS, Amavisd and Spamassassin
 
-To be used --> v1
+To be used --> v1-redis
 
 <!-- ## Test v2/v3 in docker container
 
@@ -45,6 +45,12 @@ the code changed by `docker cp <source> <dest>` will be recognized and server wi
     cd v1/docker
     ```
 
+- **v1-redis** (same as v1 but w/ redis message queue service for training job)
+
+    ```sh
+    cd v1-redis/docker
+    ```
+
 - v2 (1 service using `node-cmd` module)
 
     ```sh
@@ -76,13 +82,11 @@ docker rmi $(docker images -qf dangling=true)
 
 _may take time to install..._
 
-if want to install and run with debug, **remove option -d** from **docker-compose up** command
-
 ## Usage
 
 The API consists of 3 function calls
 
-_**port: v1-1234 v2-1235 v3-1236**_
+_**port: v1-1234 v1-redis-1234 v2-1235 v3-1236**_
 
 ### Header
 
